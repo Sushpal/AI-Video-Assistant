@@ -4,7 +4,7 @@ python-dotenv
 
 # --- Audio & Video Processing ---
 yt-dlp
-pydub
+pydub==0.25.1
 ffmpeg-python
 
 # --- Transcription & AI ---
@@ -29,4 +29,3 @@ torch
 SQLAlchemy
 pandas
 requests
-pyaudioop
