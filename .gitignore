@@ -1,0 +1,33 @@
+# Environment & Secrets
+.env
+venv/
+.venv/
+env/
+
+# Database
+*.db
+*.sqlite3
+
+# Vector Database
+vector_db/
+
+# Temporary Assets
+downloads/
+temp_audio/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# IDE Files
+.vscode/
+.idea/
+
+requirements-lock.txt

@@ -1,0 +1,32 @@
+# --- Core UI & Environment ---
+streamlit
+python-dotenv
+
+# --- Audio & Video Processing ---
+yt-dlp
+pydub
+ffmpeg-python
+pyaudioop
+
+# --- Transcription & AI ---
+openai-whisper
+mistralai                # REQUIRED for your summarizer and RAG engine
+bcrypt                  # REQUIRED for your new secure db.py
+
+# --- AI Orchestration & RAG ---
+langchain
+langchain-community
+langchain-core
+langchain-mistralai      # REQUIRED to connect LangChain to Mistral
+langchain-huggingface
+langchain-chroma
+
+# --- Vector Database & Embeddings ---
+chromadb
+sentence-transformers
+torch
+
+# --- Database & Utilities ---
+SQLAlchemy
+pandas
+requests
