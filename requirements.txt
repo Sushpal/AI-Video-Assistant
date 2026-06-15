@@ -6,7 +6,6 @@ python-dotenv
 yt-dlp
 pydub
 ffmpeg-python
-pyaudioop
 
 # --- Transcription & AI ---
 openai-whisper
@@ -30,3 +29,4 @@ torch
 SQLAlchemy
 pandas
 requests
+pyaudioop
