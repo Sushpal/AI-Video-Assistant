@@ -3,7 +3,7 @@ from pydub import AudioSegment
 import os
 
 DOWNLOAD_DIR = 'downloads'
-os.makedirs(DOWNLOAD_DIR,exist_ok = True)
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 def download_youtube_audio(url: str) -> str:
     output_path = os.path.join(DOWNLOAD_DIR, "%(title)s.%(ext)s")
@@ -34,31 +34,39 @@ def download_youtube_audio(url: str) -> str:
         return base + ".wav"
 
 
-
 def convert_to_wav(input_path: str) -> str:
     """Convert any audio/video file to WAV format using pydub."""
     output_path = os.path.splitext(input_path)[0] + "_converted.wav"
     audio = AudioSegment.from_file(input_path)
-    audio = audio.set_channels(1).set_frame_rate(16000) #16khz
+    audio = audio.set_channels(1).set_frame_rate(16000)  # 16khz
     audio.export(output_path, format="wav")
     return output_path
 
 
-
-def chunk_audio(wav_path : str , chunk_minutes : int = 10) -> list:
+def chunk_audio(wav_path: str, chunk_minutes: int = 10) -> list:
     audio = AudioSegment.from_wav(wav_path)
-    chunk_ms = chunk_minutes * 60 * 1000 
+    chunk_ms = chunk_minutes * 60 * 1000
 
     chunks = []
 
-    for i, start in enumerate(range(0,len(audio),chunk_ms)):
-        chunk = audio[start : start + chunk_ms]
+    for i, start in enumerate(range(0, len(audio), chunk_ms)):
+        chunk = audio[start: start + chunk_ms]
         chunk_path = f"{wav_path}_chunk_{i}.wav"
-        chunk.export(chunk_path , format = "wav")
-
+        chunk.export(chunk_path, format="wav")
         chunks.append(chunk_path)
-    
+
     return chunks
+
+
+def cleanup_file(path: str):
+    """Safely delete a file — no crash if already gone."""
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+            print(f"🗑️ Deleted: {path}")
+    except Exception as e:
+        print(f"⚠️ Cleanup warning: {e}")
+
 
 def process_input(source: str) -> list:
     if source.startswith("http://") or source.startswith("https://"):
@@ -71,4 +79,9 @@ def process_input(source: str) -> list:
     print("Chunking audio...")
     chunks = chunk_audio(wav_path)
     print(f"Audio ready — {len(chunks)} chunk(s) created.")
+
+    # Cleanup original WAV immediately after chunking
+    # Chunks are what transcriber uses — original no longer needed
+    cleanup_file(wav_path)
+
     return chunks

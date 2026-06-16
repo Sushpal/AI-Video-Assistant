@@ -106,7 +106,15 @@ def transcribe_all(chunks: list, language: str = "english") -> str:
     for i, chunk in enumerate(chunks):  
         print(f"Transcribing chunk {i + 1}/{len(chunks)}...")
         text = transcribe_chunk(chunk, language=language)  
-        full_transcript += text + " "  
+        full_transcript += text + " "
+
+        # Cleanup chunk immediately after transcription
+        try:
+            if os.path.exists(chunk):
+                os.remove(chunk)
+                print(f"🗑️ Deleted chunk: {chunk}")
+        except Exception as e:
+            print(f"⚠️ Chunk cleanup warning: {e}")
 
     print("Transcription complete.")
     return full_transcript.strip()
