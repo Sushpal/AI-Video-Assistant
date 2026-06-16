@@ -26,9 +26,7 @@ def download_youtube_audio(url: str) -> str:
         # FIX: yt_dlp itself sanitize cheyyi
         "restrictfilenames": True,    
     }
-    if os.path.exists(cookie_path):
-        ydl_opts["cookiefile"] = cookie_path
-        
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
         filename = ydl.prepare_filename(info)
