@@ -20,7 +20,7 @@ def download_youtube_audio(url: str) -> str:
         "quiet": True,
         "extractor_args": {
             "youtube": {
-                "player_client": ["android", "web"],
+                "player_client": ["web"],
             }
         },
         # FIX: yt_dlp itself sanitize cheyyi
