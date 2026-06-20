@@ -1,48 +1,14 @@
 import yt_dlp
 from pydub import AudioSegment
 import os
-import tempfile
-
-try:
-    import streamlit as st
-except ImportError:
-    st = None
 
 DOWNLOAD_DIR = 'downloads'
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-
-def _get_cookie_file():
-    """Write YOUTUBE_COOKIES secret to a temp file if available. Returns path or None."""
-    if st is None:
-        return None
-    try:
-        cookies = st.secrets.get("YOUTUBE_COOKIES", None)
-    except Exception:
-        cookies = None
-
-    if not cookies:
-        return None
-
-    # FIX: Streamlit Secrets TOML triple-quote adds leading whitespace
-    # to each line — strip it so Netscape cookie format stays valid
-    cleaned_lines = [line.lstrip() for line in cookies.splitlines()]
-    cleaned_cookies = "\n".join(cleaned_lines)
-
-    tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
-    tmp.write(cleaned_cookies)
-    tmp.flush()
-    tmp.close()
-    return tmp.name
-
-
 def download_youtube_audio(url: str) -> str:
     output_path = os.path.join(DOWNLOAD_DIR, "%(title)s.%(ext)s")
-
-    cookie_file = _get_cookie_file()
-
     ydl_opts = {
-        "format": "bestaudio[ext=m4a]/bestaudio/best",
+        "format": "bestaudio/best",
         "outtmpl": output_path,
         "postprocessors": [
             {
@@ -54,25 +20,16 @@ def download_youtube_audio(url: str) -> str:
         "quiet": True,
         "extractor_args": {
             "youtube": {
-                "player_client": ["ios","android", "web"],
+                "player_client": ["ios", "web"],
             }
         },
         "restrictfilenames": True,
     }
-
-    if cookie_file:
-        ydl_opts["cookiefile"] = cookie_file
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            filename = ydl.prepare_filename(info)
-            base = os.path.splitext(filename)[0]
-            return base + ".wav"
-    finally:
-        # Cleanup temp cookie file
-        if cookie_file and os.path.exists(cookie_file):
-            os.remove(cookie_file)
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=True)
+        filename = ydl.prepare_filename(info)
+        base = os.path.splitext(filename)[0]
+        return base + ".wav"
 
 
 def convert_to_wav(input_path: str) -> str:
