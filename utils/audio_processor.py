@@ -24,8 +24,13 @@ def _get_cookie_file():
     if not cookies:
         return None
 
+    # FIX: Streamlit Secrets TOML triple-quote adds leading whitespace
+    # to each line — strip it so Netscape cookie format stays valid
+    cleaned_lines = [line.lstrip() for line in cookies.splitlines()]
+    cleaned_cookies = "\n".join(cleaned_lines)
+
     tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
-    tmp.write(cookies)
+    tmp.write(cleaned_cookies)
     tmp.flush()
     tmp.close()
     return tmp.name
