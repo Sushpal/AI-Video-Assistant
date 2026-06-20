@@ -42,7 +42,7 @@ def download_youtube_audio(url: str) -> str:
     cookie_file = _get_cookie_file()
 
     ydl_opts = {
-        "format": "bestaudio/best",
+        "format": "bestaudio[ext=m4a]/bestaudio/best",
         "outtmpl": output_path,
         "postprocessors": [
             {
@@ -54,7 +54,7 @@ def download_youtube_audio(url: str) -> str:
         "quiet": True,
         "extractor_args": {
             "youtube": {
-                "player_client": ["ios", "web"],
+                "player_client": ["ios","android", "web"],
             }
         },
         "restrictfilenames": True,
