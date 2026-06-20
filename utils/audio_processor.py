@@ -1,12 +1,41 @@
 import yt_dlp
 from pydub import AudioSegment
 import os
+import tempfile
+
+try:
+    import streamlit as st
+except ImportError:
+    st = None
 
 DOWNLOAD_DIR = 'downloads'
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
+
+def _get_cookie_file():
+    """Write YOUTUBE_COOKIES secret to a temp file if available. Returns path or None."""
+    if st is None:
+        return None
+    try:
+        cookies = st.secrets.get("YOUTUBE_COOKIES", None)
+    except Exception:
+        cookies = None
+
+    if not cookies:
+        return None
+
+    tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False)
+    tmp.write(cookies)
+    tmp.flush()
+    tmp.close()
+    return tmp.name
+
+
 def download_youtube_audio(url: str) -> str:
     output_path = os.path.join(DOWNLOAD_DIR, "%(title)s.%(ext)s")
+
+    cookie_file = _get_cookie_file()
+
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": output_path,
@@ -20,19 +49,25 @@ def download_youtube_audio(url: str) -> str:
         "quiet": True,
         "extractor_args": {
             "youtube": {
-                "player_client": ["ios","web"],
+                "player_client": ["ios", "web"],
             }
         },
-        # FIX: yt_dlp itself sanitize cheyyi
-        "restrictfilenames": True,    
+        "restrictfilenames": True,
     }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=True)
-        filename = ydl.prepare_filename(info)
-        # extension correct ga replace cheyyi
-        base = os.path.splitext(filename)[0]
-        return base + ".wav"
+    if cookie_file:
+        ydl_opts["cookiefile"] = cookie_file
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info)
+            base = os.path.splitext(filename)[0]
+            return base + ".wav"
+    finally:
+        # Cleanup temp cookie file
+        if cookie_file and os.path.exists(cookie_file):
+            os.remove(cookie_file)
 
 
 def convert_to_wav(input_path: str) -> str:
@@ -49,7 +84,6 @@ def chunk_audio(wav_path: str, chunk_minutes: int = 10) -> list:
     chunk_ms = chunk_minutes * 60 * 1000
 
     chunks = []
-
     for i, start in enumerate(range(0, len(audio), chunk_ms)):
         chunk = audio[start: start + chunk_ms]
         chunk_path = f"{wav_path}_chunk_{i}.wav"
@@ -82,7 +116,6 @@ def process_input(source: str) -> list:
     print(f"Audio ready — {len(chunks)} chunk(s) created.")
 
     # Cleanup original WAV immediately after chunking
-    # Chunks are what transcriber uses — original no longer needed
     cleanup_file(wav_path)
 
     return chunks
