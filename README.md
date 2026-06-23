@@ -59,7 +59,7 @@ Three specialised prompts extract independently:
 - ❓ **Open questions** — unresolved topics needing follow-up
 
 ### Stage 5 — RAG (Retrieval-Augmented Generation)
-The transcript is chunked, embedded using `all-MiniLM-L6-v2`, and stored in ChromaDB. When a user asks a question, the top-5 most relevant chunks are retrieved and passed to Mistral AI — so aanswers are grounded in retrieved transcript context to reduce hallucinations
+The transcript is chunked, embedded using `all-MiniLM-L6-v2`, and stored in ChromaDB. When a user asks a question, the top-5 most relevant chunks are retrieved and passed to Mistral AI — so answers are grounded in retrieved transcript context to reduce hallucinations
 
 ### Stage 6 — Persistent Session Storage
 Every analysis is saved to SQLite with full chat history, so users can revisit any past session without reprocessing.
@@ -277,7 +277,7 @@ You: What did we decide about the launch date?
 
 ## 🔒 Security Notes
 
-- Passwords are hashed with SHA-256 — never stored as plain text
+- Passwords are hashed with bcrypt (auto-salted) — never stored as plain text
 - API keys loaded from `.env` — never hardcode or commit them
 - Each user can only access their own sessions — enforced at the DB query level
 - Uploaded temp files are deleted immediately after processing
@@ -317,7 +317,7 @@ For suggestions, feedback, or collaboration:
 
 ---
 
-<div align="center">
+<div align ="center">
 
 **Built by Sushpal**
 
