@@ -169,7 +169,6 @@ for key, default in {
     "input_mode": "url",
     "active_session_id": None,
     "auth_mode": "login",
-    "show_welcome_notice": False,
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
@@ -209,21 +208,6 @@ def render_chat(chat_history: list):
 # ─── Main App ────────────────────────────────────────────────────────────────────
 def render_app():
     user = st.session_state.user
-
-    # ── Welcome Notice — dismissible banner after login ──────────────────────
-    if st.session_state.show_welcome_notice:
-        col1, col2 = st.columns([11, 1])
-        with col1:
-            st.warning(
-                "💡 **YouTube URL** is not supported on cloud deployment. "
-                "Download your video from **[yt2mp3.ai](https://yt2mp3.ai/)** "
-                "and upload it here as MP3/MP4."
-            )
-        with col2:
-            if st.button("✕", key="dismiss_notice", type="secondary"):
-                st.session_state.show_welcome_notice = False
-                st.rerun()
-        st.session_state.show_welcome_notice = False
 
     with st.sidebar:
         st.markdown('<div class="hero-title" style="font-size:1.6rem">🎬 AI Video<br>Assistant</div>', unsafe_allow_html=True)
@@ -342,6 +326,8 @@ def render_app():
             st.error("Please enter a YouTube URL.")
         elif st.session_state.input_mode == "file" and uploaded_file is None:
             st.error("Please upload an audio/video file.")
+        elif st.session_state.input_mode == "file" and uploaded_file is not None and uploaded_file.size > 100 * 1024 * 1024:
+            st.error("❌ File too large — maximum size is 100MB. Please upload a shorter clip.")
         else:
             st.session_state.pipeline_done = False
             st.session_state.result = None
