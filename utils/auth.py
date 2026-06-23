@@ -30,6 +30,7 @@ def render_auth():
                     user = verify_user(username, password)
                     if user:
                         st.session_state.user = user
+                        st.session_state.show_welcome_notice = True
                         st.rerun()
                     else:
                         st.error("❌ Invalid username or password.")
@@ -57,6 +58,7 @@ def render_auth():
                     if success:
                         user = verify_user(username, password)
                         st.session_state.user = user
+                        st.session_state.show_welcome_notice = True
                         st.success("✅ Account created!")
                         st.rerun()
                     else:
