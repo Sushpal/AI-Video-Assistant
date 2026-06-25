@@ -169,6 +169,7 @@ for key, default in {
     "input_mode": "url",
     "active_session_id": None,
     "auth_mode": "login",
+    "show_welcome_notice": False,  # FIX: added for YouTube notice banner
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
@@ -208,6 +209,20 @@ def render_chat(chat_history: list):
 # ─── Main App ────────────────────────────────────────────────────────────────────
 def render_app():
     user = st.session_state.user
+
+    # ── YouTube Notice Banner — dismissible, shows once after login ───────────
+    if st.session_state.show_welcome_notice:
+        col1, col2 = st.columns([11, 1])
+        with col1:
+            st.warning(
+                "💡 **YouTube URL** is not supported on cloud deployment. "
+                "Download your video from **[yt2mp3.ai](https://yt2mp3.ai/)** "
+                "and upload it here as MP3/MP4."
+            )
+        with col2:
+            if st.button("✕", key="dismiss_notice", type="secondary"):
+                st.session_state.show_welcome_notice = False
+                st.rerun()
 
     with st.sidebar:
         st.markdown('<div class="hero-title" style="font-size:1.6rem">🎬 AI Video<br>Assistant</div>', unsafe_allow_html=True)
@@ -456,7 +471,6 @@ def render_app():
 
         if send_btn and user_input.strip():
             with st.spinner("Thinking…"):
-                # FIX: pass chat history so RAG remembers conversation context
                 answer = ask_question(r["rag_chain"], user_input.strip(), history=st.session_state.chat_history)
             st.session_state.chat_history.append({"role": "user",      "content": user_input.strip()})
             st.session_state.chat_history.append({"role": "assistant", "content": answer})
