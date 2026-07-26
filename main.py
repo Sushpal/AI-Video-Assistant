@@ -38,7 +38,7 @@ def run_pipeline(source :str, language :str = "english") -> dict:
     }
 
 if __name__ == "__main__":
-    # CLI entry point
+   
     source = input("Enter YouTube URL or local file path: ").strip()
     language = input("Language (english/hinglish): ").strip() or "english"
     result = run_pipeline(source, language)
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     print(f"\n❓ Open Questions:\n{result['open_questions']}")
     print("=" * 60)
 
-    # Phase 2 — Chat with your meeting via RAG
+   
     print("\n💬 Chat with your meeting (type 'exit' to quit)\n")
     rag_chain = result["rag_chain"]
     while True:

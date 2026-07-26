@@ -22,7 +22,7 @@ from core.rag_engine import build_rag_chain, load_rag_chain, ask_question
 
 init_db()
 
-# ─── Page Config ────────────────────────────────────────────────────────────────
+
 st.set_page_config(
     page_title="AI Video Assistant",
     page_icon="🎬",
@@ -30,7 +30,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── Custom CSS (Minimalist Cyberpunk Theme) ───────────────────────────────────
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
@@ -159,7 +159,7 @@ label { color: var(--text-muted) !important; font-size: 0.8rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ─── Session State Init ──────────────────────────────────────────────────────────
+
 for key, default in {
     "user": None,
     "result": None,
@@ -169,12 +169,12 @@ for key, default in {
     "input_mode": "url",
     "active_session_id": None,
     "auth_mode": "login",
-    "show_welcome_notice": False,  # FIX: added for YouTube notice banner
+    "show_welcome_notice": False,  
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
-# ─── Helpers ────────────────────────────────────────────────────────────────────
+
 def step_status(steps: dict, key: str) -> str:
     s = steps.get(key, "pending")
     if s == "active": return "dot-active"
@@ -206,11 +206,10 @@ def render_chat(chat_history: list):
     chat_html += '</div>'
     st.markdown(chat_html, unsafe_allow_html=True)
 
-# ─── Main App ────────────────────────────────────────────────────────────────────
+
 def render_app():
     user = st.session_state.user
 
-    # ── YouTube Notice Banner — dismissible, shows once after login ───────────
     if st.session_state.show_welcome_notice:
         col1, col2 = st.columns([11, 1])
         with col1:
@@ -271,7 +270,7 @@ def render_app():
             step_placeholders[step] = (ph, icon, label)
             render_step_bar(label, step, icon, ph)
 
-        # ── Past Sessions ─────────────────────────────────────────────────────────
+        
         st.markdown("---")
         st.markdown('<span class="badge badge-cyan">Past Sessions</span>', unsafe_allow_html=True)
 
@@ -312,7 +311,7 @@ def render_app():
                             st.session_state.active_session_id = None
                         st.rerun()
 
-        # ── Reset & Logout ────────────────────────────────────────────────────────
+        
         st.markdown("---")
         if st.button("➕ New Analysis", use_container_width=True, type="primary"):
             st.session_state.result = None
@@ -331,7 +330,7 @@ def render_app():
             st.session_state.active_session_id = None
             st.rerun()
 
-    # ── Main Area ─────────────────────────────────────────────────────────────────
+   
     st.markdown('<div class="hero-title">AI Video Assistant</div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Transcribe · Summarise · Chat with Videos</div>', unsafe_allow_html=True)
     st.markdown("---")
@@ -402,7 +401,6 @@ def render_app():
                 rag_chain       = build_rag_chain(transcript, collection_name)
                 update_step("rag", "done")
 
-                # Cleanup uploaded temp file immediately
                 if st.session_state.input_mode == "file":
                     try: os.remove(actual_source)
                     except Exception: pass
@@ -421,7 +419,7 @@ def render_app():
                 }
                 st.session_state.active_session_id = session_id
                 st.session_state.pipeline_done = True
-                progress_placeholder.success("✅ Analysis complete!")
+                progress_placeholder.success(" Analysis complete!")
                 time.sleep(0.5)
                 progress_placeholder.empty()
                 st.rerun()
@@ -432,7 +430,7 @@ def render_app():
                         st.session_state.pipeline_steps[k] = "pending"
                         ph, icon, label = step_placeholders[k]
                         render_step_bar(label, k, icon, ph)
-                progress_placeholder.error(f"❌ Error: {e}")
+                progress_placeholder.error(f" Error: {e}")
 
     if st.session_state.result:
         r = st.session_state.result
@@ -499,7 +497,6 @@ def render_app():
             </div>
         </div>""", unsafe_allow_html=True)
 
-# ─── Router ──────────────────────────────────────────────────────────────────────
 if st.session_state.user is None:
     render_auth()
 else:

@@ -18,8 +18,7 @@ def get_embeddings():
 def build_vector_store(transcript: str, collection_name: str) -> Chroma:
     print(f"Building vector store for collection: {collection_name}")
 
-    # FIX 1: Better chunking for meetings
-    # Increased overlap to 100 to ensure context isn't lost between speaker turns
+
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=700, 
         chunk_overlap=100
@@ -33,9 +32,7 @@ def build_vector_store(transcript: str, collection_name: str) -> Chroma:
 
     embeddings = get_embeddings()
 
-    # FIX 2: Prevent Duplicate/Ghost Data
-    # We initialize the store and delete the collection if it already exists 
-    # before adding new documents.
+
     vector_store = Chroma(
         collection_name=collection_name,
         embedding_function=embeddings,

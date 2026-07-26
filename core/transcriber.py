@@ -1,12 +1,12 @@
 import whisper
 import os
 import requests
-import time  # Added for Rate Limiting
+import time  
 from pydub import AudioSegment
 
 # Sarvam's sync STT-translate API rejects audio longer than 30s.
 SARVAM_PIECE_SECONDS = 25
-OVERLAP_MS = 1000  # FIX 1: 1-second overlap (1000ms)
+OVERLAP_MS = 1000 
 
 
 WHISPER_MODEL = os.getenv("WHISPER_MODEL", "small")
@@ -51,7 +51,7 @@ def _send_to_sarvam(piece_path: str) -> str:
         )
 
     if not response.ok:
-        print(f"\n❌ Sarvam returned {response.status_code}")
+        print(f"\n Sarvam returned {response.status_code}")
         print(f"Response body: {response.text}\n")
         response.raise_for_status()
 
@@ -69,8 +69,7 @@ def transcribe_chunk_sarvam(chunk_path: str) -> str:
     total_pieces = (len(audio) + piece_ms - 1) // piece_ms
 
     for i, start in enumerate(range(0, len(audio), piece_ms)):
-        # FIX 1: Sliding Window Overlap
-        # Instead of cutting exactly at 25s, we take a bit extra from the next piece
+       
         end = start + piece_ms + OVERLAP_MS
         piece = audio[start: end] 
         
@@ -81,8 +80,7 @@ def transcribe_chunk_sarvam(chunk_path: str) -> str:
             print(f"  → Sarvam piece {i + 1}/{total_pieces} ...")
             full_text += _send_to_sarvam(piece_path) + " "
             
-            # FIX 2: Rate Limit Protection
-            # Small delay to ensure the API doesn't flag back-to-back requests
+           
             time.sleep(1) 
             
         finally:
@@ -112,9 +110,9 @@ def transcribe_all(chunks: list, language: str = "english") -> str:
         try:
             if os.path.exists(chunk):
                 os.remove(chunk)
-                print(f"🗑️ Deleted chunk: {chunk}")
+                print(f" Deleted chunk: {chunk}")
         except Exception as e:
-            print(f"⚠️ Chunk cleanup warning: {e}")
+            print(f" Chunk cleanup warning: {e}")
 
     print("Transcription complete.")
     return full_transcript.strip()

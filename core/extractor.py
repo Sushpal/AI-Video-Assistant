@@ -4,8 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 import os 
 
-# FIX: Define a safe character limit (approx 12k-15k words)
-# This keeps us safe within Mistral's context window.
+
 MAX_TRANSCRIPT_CHARS = 60000 
 
 def get_llm():
@@ -19,7 +18,7 @@ def build_chain(system_prompt: str):
     llm = get_llm()
     return (
         RunnablePassthrough() 
-        | RunnableLambda(lambda x: {"text": x[:MAX_TRANSCRIPT_CHARS]}) # FIX: Truncate here
+        | RunnableLambda(lambda x: {"text": x[:MAX_TRANSCRIPT_CHARS]}) 
         | ChatPromptTemplate.from_messages([
             ("system", system_prompt),
             ("human", "{text}"),

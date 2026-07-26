@@ -155,7 +155,7 @@ def load_session(session_id: str, user_id: int) -> dict | None:
     conn.close()
     
     if row:
-        # SAFETY FIX: Handling potential JSON errors
+        
         try:
             history = json.loads(row["chat_history"])
         except (json.JSONDecodeError, TypeError):
@@ -201,7 +201,6 @@ def update_chat_history(session_id: str, chat_history: list) -> None:
 def delete_session(session_id: str, user_id: int) -> None:
     conn = get_connection()
 
-    # collection_name teesuko before delete
     row = conn.execute(
         "SELECT collection_name FROM sessions WHERE id = ? AND user_id = ?",
         (session_id, user_id)
@@ -214,7 +213,6 @@ def delete_session(session_id: str, user_id: int) -> None:
     conn.commit()
     conn.close()
 
-    # SAFETY FIX: Check if row exists before accessing it and handle rmtree errors
     if row and row["collection_name"]:
         collection_dir = os.path.join(CHROMA_DIR, row["collection_name"])
         if os.path.exists(collection_dir):

@@ -17,15 +17,15 @@ def render_auth():
             </div>
         </div>""", unsafe_allow_html=True)
 
-        # FIX 1: .strip() prevents whitespace login issues
+        
         username = st.text_input("Username", placeholder="Enter username").strip()
         password = st.text_input("Password", placeholder="Enter password", type="password")
 
         if st.session_state.auth_mode == "login":
-            if st.button("🔑 Login", use_container_width=True):
-                # FIX 2: Empty field check before DB call
+            if st.button(" Login", use_container_width=True):
+                
                 if not username or not password:
-                    st.warning("⚠️ Please enter both username and password.")
+                    st.warning(" Please enter both username and password.")
                 else:
                     user = verify_user(username, password)
                     if user:
@@ -33,7 +33,7 @@ def render_auth():
                         st.session_state.show_welcome_notice = True
                         st.rerun()
                     else:
-                        st.error("❌ Invalid username or password.")
+                        st.error(" Invalid username or password.")
 
             st.markdown(
                 "<div style='text-align:center;margin-top:1rem;font-size:0.8rem;"
@@ -45,24 +45,24 @@ def render_auth():
                 st.rerun()
 
         else:
-            if st.button("✅ Create Account", use_container_width=True):
-                # FIX 2 (register): Empty field check before DB call
+            if st.button(" Create Account", use_container_width=True):
+                
                 if not username or not password:
-                    st.warning("⚠️ Please enter both username and password.")
+                    st.warning(" Please enter both username and password.")
                 elif len(username) < 3:
-                    st.error("❌ Username must be at least 3 characters.")
+                    st.error(" Username must be at least 3 characters.")
                 elif len(password) < 4:
-                    st.error("❌ Password must be at least 4 characters.")
+                    st.error(" Password must be at least 4 characters.")
                 else:
                     success = create_user(username, password)
                     if success:
                         user = verify_user(username, password)
                         st.session_state.user = user
                         st.session_state.show_welcome_notice = True
-                        st.success("✅ Account created!")
+                        st.success(" Account created!")
                         st.rerun()
                     else:
-                        st.error("❌ Username already exists.")
+                        st.error("Username already exists.")
 
             st.markdown(
                 "<div style='text-align:center;margin-top:1rem;font-size:0.8rem;"

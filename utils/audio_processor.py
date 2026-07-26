@@ -60,9 +60,9 @@ def cleanup_file(path: str):
     try:
         if os.path.exists(path):
             os.remove(path)
-            print(f"🗑️ Deleted: {path}")
+            print(f"Deleted: {path}")
     except Exception as e:
-        print(f"⚠️ Cleanup warning: {e}")
+        print(f" Cleanup warning: {e}")
 
 
 def process_input(source: str) -> list:
